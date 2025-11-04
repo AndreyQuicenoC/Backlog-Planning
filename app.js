@@ -511,9 +511,23 @@ function openModal(story) {
       }
       
       
-      <div style="margin-bottom: 1.5rem;">
-        <h3 style="color: var(--text-primary); margin: 0 0 0.75rem 0; font-size: 1.25rem;">Descripción</h3>
-        <p style="color: var(--text-secondary); line-height: 1.8; margin: 0; white-space: pre-line;">${escapeHtml(
+      <div style="margin-bottom: 1.5rem;" id="description-section">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <h3 id="description-title" style="color: var(--text-primary); margin: 0; font-size: 1.25rem;">Descripción</h3>
+          <button 
+            class="copy-description-btn"
+            style="padding: 0.5rem; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;"
+            onmouseover="this.style.background='var(--accent-color)'; this.style.transform='scale(1.1)';"
+            onmouseout="this.style.background='var(--primary-color)'; this.style.transform='scale(1)';"
+            onclick="copyDescriptionSection(this)"
+            title="Copiar descripción">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        </div>
+        <p id="description-content" style="color: var(--text-secondary); line-height: 1.8; margin: 0; white-space: pre-line;">${escapeHtml(
           story.description || "Sin descripción disponible"
         )}</p>
       </div>
@@ -523,13 +537,32 @@ function openModal(story) {
         ${
           acceptanceCriteria.length > 0
             ? `
-        <ul style="color: var(--text-secondary); line-height: 1.8; margin: 0; padding-left: 1.5rem;">
+        <ul style="color: var(--text-secondary); line-height: 1.8; margin: 0; padding-left: 0; list-style: none;">
           ${acceptanceCriteria
             .map(
-              (criterion) =>
-                `<li style="margin-bottom: 0.5rem;">${escapeHtml(
-                  criterion
-                )}</li>`
+              (criterion, index) =>
+                `<li style="margin-bottom: 0.75rem; display: flex; align-items: start; gap: 0.5rem; padding: 0.75rem; background: var(--background-secondary); border-radius: 6px; position: relative;">
+                  <span style="flex: 1; padding-left: 1.5rem; position: relative;">
+                    <span style="position: absolute; left: 0; top: 0; color: var(--primary-color); font-weight: 600;">•</span>
+                    ${escapeHtml(criterion)}
+                  </span>
+                  <button 
+                    class="copy-criterion-btn" 
+                    data-text="${escapeHtml(criterion)}"
+                    style="flex-shrink: 0; padding: 0.5rem; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;"
+                    onmouseover="this.style.background='var(--accent-color)'; this.style.transform='scale(1.1)';"
+                    onmouseout="this.style.background='var(--primary-color)'; this.style.transform='scale(1)';"
+                    onclick="copyToClipboard('${escapeHtml(criterion).replace(
+                      /'/g,
+                      "\\'"
+                    )}', this)"
+                    title="Copiar criterio">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  </button>
+                </li>`
             )
             .join("")}
         </ul>
@@ -538,12 +571,26 @@ function openModal(story) {
         }
       </div>
       
-      <div>
-        <h3 style="color: var(--text-primary); margin: 0 0 0.75rem 0; font-size: 1.25rem;">Definición de Hecho</h3>
+      <div id="dod-section">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <h3 id="dod-title" style="color: var(--text-primary); margin: 0; font-size: 1.25rem;">Definición de Hecho</h3>
+          <button 
+            class="copy-dod-btn"
+            style="padding: 0.5rem; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;"
+            onmouseover="this.style.background='var(--accent-color)'; this.style.transform='scale(1.1)';"
+            onmouseout="this.style.background='var(--primary-color)'; this.style.transform='scale(1)';"
+            onclick="copyDoDSection(this)"
+            title="Copiar definición de hecho">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        </div>
         ${
           definitionOfDone.length > 0
             ? `
-        <ul style="color: var(--text-secondary); line-height: 1.8; margin: 0; padding-left: 1.5rem;">
+        <ul id="dod-content" style="color: var(--text-secondary); line-height: 1.8; margin: 0; padding-left: 1.5rem;">
           ${definitionOfDone
             .map(
               (item) =>
@@ -552,7 +599,7 @@ function openModal(story) {
             .join("")}
         </ul>
         `
-            : '<p style="color: var(--text-secondary); margin: 0;">No hay definición de hecho disponible.</p>'
+            : '<p id="dod-content" style="color: var(--text-secondary); margin: 0;">No hay definición de hecho disponible.</p>'
         }
       </div>
     </div>
@@ -601,6 +648,131 @@ function debounce(func, wait) {
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
   };
+}
+
+/**
+ * Copia la sección completa de descripción (título + contenido)
+ * @param {HTMLElement} button - Botón que activó la copia
+ */
+function copyDescriptionSection(button) {
+  const titleElement = document.getElementById("description-title");
+  const contentElement = document.getElementById("description-content");
+
+  if (titleElement && contentElement) {
+    const title = titleElement.textContent;
+    const content = contentElement.textContent;
+    const fullText = `${title}\n\n${content}`;
+
+    copyToClipboard(fullText, button);
+  }
+}
+
+/**
+ * Copia la sección completa de Definición de Hecho (título + lista)
+ * @param {HTMLElement} button - Botón que activó la copia
+ */
+function copyDoDSection(button) {
+  const titleElement = document.getElementById("dod-title");
+  const contentElement = document.getElementById("dod-content");
+
+  if (titleElement && contentElement) {
+    const title = titleElement.textContent;
+
+    // Si es una lista (ul), extraer cada item
+    if (contentElement.tagName === "UL") {
+      const items = Array.from(contentElement.querySelectorAll("li"))
+        .map((li, index) => `- ${li.textContent}`)
+        .join("\n");
+      const fullText = `${title}\n\n${items}`;
+      copyToClipboard(fullText, button);
+    } else {
+      // Si es un párrafo (sin contenido)
+      const content = contentElement.textContent;
+      const fullText = `${title}\n\n${content}`;
+      copyToClipboard(fullText, button);
+    }
+  }
+}
+
+/**
+ * Copia texto al portapapeles y muestra feedback visual
+ * @param {string} text - Texto a copiar
+ * @param {HTMLElement} button - Botón que activó la copia
+ */
+function copyToClipboard(text, button) {
+  // Usar la API moderna de Clipboard
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        showCopyFeedback(button, true);
+      })
+      .catch((err) => {
+        console.error("Error al copiar:", err);
+        // Fallback al método antiguo
+        fallbackCopy(text, button);
+      });
+  } else {
+    // Fallback para navegadores antiguos
+    fallbackCopy(text, button);
+  }
+}
+
+/**
+ * Método fallback para copiar al portapapeles
+ * @param {string} text - Texto a copiar
+ * @param {HTMLElement} button - Botón que activó la copia
+ */
+function fallbackCopy(text, button) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.position = "fixed";
+  textArea.style.left = "-999999px";
+  textArea.style.top = "-999999px";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+
+  try {
+    const successful = document.execCommand("copy");
+    showCopyFeedback(button, successful);
+  } catch (err) {
+    console.error("Error al copiar (fallback):", err);
+    showCopyFeedback(button, false);
+  }
+
+  document.body.removeChild(textArea);
+}
+
+/**
+ * Muestra feedback visual al copiar
+ * @param {HTMLElement} button - Botón a actualizar
+ * @param {boolean} success - Si la copia fue exitosa
+ */
+function showCopyFeedback(button, success) {
+  const originalContent = button.innerHTML;
+  const originalBg = button.style.background;
+
+  if (success) {
+    // Icono de check
+    button.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>`;
+    button.style.background = "#10b981"; // Verde
+  } else {
+    // Icono de X
+    button.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>`;
+    button.style.background = "#ef4444"; // Rojo
+  }
+
+  // Restaurar después de 1.5 segundos
+  setTimeout(() => {
+    button.innerHTML = originalContent;
+    button.style.background = originalBg;
+  }, 1500);
 }
 
 // ==================== Inicio de la aplicación ====================
